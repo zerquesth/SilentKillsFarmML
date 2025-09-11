@@ -1,0 +1,463 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local character = LocalPlayer.Character
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
+local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
+
+_G.whitelistedPlayers = _G.whitelistedPlayers or {}
+
+local function whitelistFriends()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player:IsFriendsWith(LocalPlayer.UserId) then
+            local playerName = player.Name
+            local alreadyWhitelisted = false
+            
+            for _, name in ipairs(_G.whitelistedPlayers) do
+                if name:lower() == playerName:lower() then
+                    alreadyWhitelisted = true
+                    break
+                end
+            end
+
+            if not alreadyWhitelisted then
+                table.insert(_G.whitelistedPlayers, playerName)
+                print("Добавлен в вайтлист: " .. playerName)
+            end
+        end
+    end
+end
+
+whitelistFriends()
+
+Players.PlayerAdded:Connect(function(player)
+    if player:IsFriendsWith(LocalPlayer.UserId) then
+        local playerName = player.Name
+        local alreadyWhitelisted = false
+        
+        for _, name in ipairs(_G.whitelistedPlayers) do
+            if name:lower() == playerName:lower() then
+                alreadyWhitelisted = true
+                break
+            end
+        end
+
+        if not alreadyWhitelisted then
+            table.insert(_G.whitelistedPlayers, playerName)
+            print("Добавлен в вайтлист: " .. playerName)
+        end
+    end
+end)
+
+local punch = LocalPlayer.Backpack:FindFirstChild("Punch") or (LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Punch"))
+if punch and punch:FindFirstChild("attackTime") then
+    punch.attackTime.Value = 0
+end
+
+character.HumanoidRootPart.CFrame = CFrame.new(1947, 1.7988528, 6191, 1, -1.38381895e-09, 2.73059163e-14, 1.38381895e-09, 1, -4.17202584e-09, -2.73001429e-14, 4.17202584e-09, 1)
+
+local AutoKillAutoHop = Instance.new("ScreenGui")
+local GlobalFrame = Instance.new("Frame")
+local UIDragDetector = Instance.new("UIDragDetector")
+local DownFrame = Instance.new("Frame")
+local UICorner = Instance.new("UICorner")
+local TextFrame = Instance.new("Frame")
+local UICorner_2 = Instance.new("UICorner")
+local TextLabel = Instance.new("TextLabel")
+local KillsLabel = Instance.new("TextLabel")
+local TitleFrame = Instance.new("Frame")
+local UICorner_3 = Instance.new("UICorner")
+local ImageLabel = Instance.new("ImageLabel")
+local UICorner_4 = Instance.new("UICorner")
+local TextLabel_2 = Instance.new("TextLabel")
+
+AutoKillAutoHop.Name = "AutoKillAutoHop"
+AutoKillAutoHop.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+AutoKillAutoHop.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+AutoKillAutoHop.ResetOnSpawn = false
+
+GlobalFrame.Name = "GlobalFrame"
+GlobalFrame.Parent = AutoKillAutoHop
+GlobalFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+GlobalFrame.BackgroundTransparency = 1.000
+GlobalFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+GlobalFrame.BorderSizePixel = 0
+GlobalFrame.Position = UDim2.new(0.1, 0, 0.1, 0)
+GlobalFrame.Size = UDim2.new(0, 250, 0, 106)
+GlobalFrame.AnchorPoint = Vector2.new(0, 0)
+
+UIDragDetector.Parent = GlobalFrame
+
+DownFrame.Name = "DownFrame"
+DownFrame.Parent = GlobalFrame
+DownFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+DownFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+DownFrame.BorderSizePixel = 0
+DownFrame.Position = UDim2.new(0, 0, 0.8, 0)
+DownFrame.Size = UDim2.new(1, 0, 0.24, 0)
+
+UICorner.CornerRadius = UDim.new(0, 6)
+UICorner.Parent = DownFrame
+
+TextFrame.Name = "TextFrame"
+TextFrame.Parent = GlobalFrame
+TextFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+TextFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextFrame.BorderSizePixel = 0
+TextFrame.Position = UDim2.new(0, 0, 0.13, 0)
+TextFrame.Size = UDim2.new(1, 0, 0.78, 0)
+
+UICorner_2.CornerRadius = UDim.new(0, 6)
+UICorner_2.Parent = TextFrame
+
+TextLabel.Parent = TextFrame
+TextLabel.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+TextLabel.BackgroundTransparency = 1.000
+TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel.BorderSizePixel = 0
+TextLabel.Position = UDim2.new(0.05, 0, 0.2, 0)
+TextLabel.Size = UDim2.new(0.9, 0, 0.4, 0)
+TextLabel.Font = Enum.Font.FredokaOne
+TextLabel.Text = "Server Hop in: 52 sec"
+TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.TextSize = 28.000
+TextLabel.TextWrapped = true
+
+KillsLabel.Name = "KillsLabel"
+KillsLabel.Parent = TextFrame
+KillsLabel.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+KillsLabel.BackgroundTransparency = 1.000
+KillsLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+KillsLabel.BorderSizePixel = 0
+KillsLabel.Position = UDim2.new(0.05, 0, 0.6, 0)
+KillsLabel.Size = UDim2.new(0.9, 0, 0.4, 0)
+KillsLabel.Font = Enum.Font.FredokaOne
+KillsLabel.Text = "Kills: 0"
+KillsLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+KillsLabel.TextSize = 24.000
+KillsLabel.TextWrapped = true
+
+coroutine.wrap(function()
+	while AutoKillAutoHop and AutoKillAutoHop.Parent do
+		local kills = LocalPlayer:FindFirstChild("leaderstats") and LocalPlayer.leaderstats:FindFirstChild("Kills")
+		if kills then
+			KillsLabel.Text = "Kills: " .. tostring(kills.Value)
+		else
+			KillsLabel.Text = "Kills: 0"
+		end
+		task.wait(0.1)
+	end
+end)()
+
+TitleFrame.Name = "TitleFrame"
+TitleFrame.Parent = GlobalFrame
+TitleFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+TitleFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TitleFrame.BorderSizePixel = 0
+TitleFrame.Position = UDim2.new(0, 0, 0, 0)
+TitleFrame.Size = UDim2.new(1, 0, 0.24, 0)
+
+UICorner_3.CornerRadius = UDim.new(0, 6)
+UICorner_3.Parent = TitleFrame
+
+ImageLabel.Parent = TitleFrame
+ImageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ImageLabel.BackgroundTransparency = 1
+ImageLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ImageLabel.BorderSizePixel = 0
+ImageLabel.Position = UDim2.new(0.03, 0, 0.02, 0)
+ImageLabel.Size = UDim2.new(0.1, 0, 1, 0)
+ImageLabel.Image = "rbxassetid://132332397162254"
+ImageLabel.ScaleType = Enum.ScaleType.Fit
+
+UICorner_4.Parent = ImageLabel
+UICorner_4.CornerRadius = UDim.new(1, 0)
+
+TextLabel_2.Parent = TitleFrame
+TextLabel_2.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel_2.BackgroundTransparency = 1.000
+TextLabel_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel_2.BorderSizePixel = 0
+TextLabel_2.Position = UDim2.new(0.15, 0, 0.15, 0)
+TextLabel_2.Size = UDim2.new(0.7, 0, 0.7, 0)
+TextLabel_2.Font = Enum.Font.FredokaOne
+TextLabel_2.Text = "Silent | Kill Gui"
+TextLabel_2.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel_2.TextSize = 20.000
+TextLabel_2.TextXAlignment = Enum.TextXAlignment.Left
+
+local placeId = game.PlaceId
+
+local function find17Or18PlayerServer()
+    local cursor = nil
+    repeat
+        local url = "https://games.roblox.com/v1/games/"..placeId.."/servers/Public?sortOrder=Desc&limit=100"
+        if cursor then
+            url = url.."&cursor="..cursor
+        end
+
+        local success, response = pcall(function()
+            return HttpService:JSONDecode(game:HttpGet(url))
+        end)
+
+        if success and response and response.data then
+            for _, server in ipairs(response.data) do
+                if (server.playing == 17 or server.playing == 18) and server.maxPlayers == 20 and server.id ~= game.JobId then
+                    return server.id
+                end
+            end
+            cursor = response.nextPageCursor
+        else
+            break
+        end
+    until not cursor
+
+    return nil
+end
+
+local function hopToServer()
+    local serverId = find17Or18PlayerServer()
+    if serverId then
+        TeleportService:TeleportToPlaceInstance(placeId, serverId, LocalPlayer)
+    else
+        task.delay(1.5, hopToServer)
+    end
+end
+
+local function checkPlayerCount()
+    local playerCount = #Players:GetPlayers()
+    return playerCount
+end
+
+local function checkAndHopIfLowPlayers()
+    local playerCount = checkPlayerCount()
+    if playerCount < 10 then
+        TextLabel.Text = "Low players: " .. playerCount .. ", hopping..."
+        hopToServer()
+        return true
+    end
+    return false
+end
+
+task.spawn(function()
+    task.wait(1)
+    checkAndHopIfLowPlayers()
+end)
+
+task.spawn(function()
+    while true do
+        task.wait(1.5)
+        if not checkAndHopIfLowPlayers() then
+            TextLabel.Text = "Server hop in: " .. timeUntilHop .. " seconds"
+        end
+    end
+end)
+
+local timeUntilHop = 52
+task.spawn(function()
+    while true do
+        for i = timeUntilHop, 0, -1 do
+            TextLabel.Text = "Server hop in: " .. i .. " seconds"
+            task.wait(1)
+        end
+        hopToServer()
+        timeUntilHop = 52
+    end
+end)
+
+local function setupDiedListener(character)
+    local hum = character:FindFirstChildOfClass("Humanoid")
+    if hum then
+        hum.Died:Connect(function()
+            hopToServer()
+        end)
+    else
+        character.ChildAdded:Connect(function(child)
+            if child:IsA("Humanoid") then
+                child.Died:Connect(function()
+                    hopToServer()
+                end)
+            end
+        end)
+    end
+end
+
+if LocalPlayer.Character then
+    setupDiedListener(LocalPlayer.Character)
+end
+
+LocalPlayer.CharacterAdded:Connect(setupDiedListener)
+
+local function attackPlayers()
+    local player = game.Players.LocalPlayer
+    
+    for _, target in ipairs(game.Players:GetPlayers()) do
+        if target ~= player then
+            -- Проверяем, находится ли игрок в вайтлисте
+            local isWhitelisted = false
+            for _, whitelistedName in ipairs(_G.whitelistedPlayers) do
+                if whitelistedName:lower() == target.Name:lower() then
+                    isWhitelisted = true
+                    break
+                end
+            end
+            
+            -- Атакуем только если игрок не в вайтлисте
+            if not isWhitelisted then
+                local root = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
+                local rHand = player.Character and player.Character:FindFirstChild("RightHand")
+                local lHand = player.Character and player.Character:FindFirstChild("LeftHand")
+                
+                if root and rHand and lHand then
+                    firetouchinterest(rHand, root, 1)
+                    firetouchinterest(lHand, root, 1)
+                    firetouchinterest(rHand, root, 0)
+                    firetouchinterest(lHand, root, 0)
+                end
+            end
+        end
+    end
+end
+
+local autoKill = true
+local punchActive = true
+local connection
+local punchConnection
+
+if connection then
+    connection:Disconnect()
+    connection = nil
+end
+
+connection = game:GetService("RunService").Heartbeat:Connect(attackPlayers)
+LocalPlayer.CharacterAdded:Connect(function()
+    if autoKill then
+        task.wait(0.2)
+        attackPlayers()
+    end
+end)
+
+if punchConnection then
+    punchConnection:Disconnect()
+    punchConnection = nil
+end
+
+local function startPunch()
+    local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    
+    while punchActive and char and char:IsDescendantOf(workspace) do
+        local punchTool = LocalPlayer.Backpack:FindFirstChild("Punch") or char:FindFirstChild("Punch")
+        
+        if punchTool then
+            if punchTool.Parent ~= char then
+                char:WaitForChild("Humanoid"):EquipTool(punchTool)
+                task.wait(0.1)
+            end
+            
+            punchTool:Activate()
+        end
+        task.wait(0.01)
+    end
+end
+
+punchConnection = LocalPlayer.CharacterAdded:Connect(function()
+    if punchActive then
+        task.wait(0.2)
+        startPunch()
+    end
+end)
+
+startPunch()
+
+task.spawn(function()
+    while true do
+        task.wait(0.2)
+        local char = LocalPlayer.Character
+        local hum = char and char:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum.Health = hum.MaxHealth
+        end
+    end
+end)
+
+task.spawn(function()
+    while true do
+        task.wait(0.5)
+        whitelistFriends()
+    end
+end)
+
+-- Добавленная функция изменения графики и использования Tropical Shake
+local function softAntiLag()
+    for _, v in ipairs(workspace:GetDescendants()) do
+        if v:IsA("BasePart") and not v.Parent:FindFirstChildOfClass("Humanoid") then
+            v.Material = Enum.Material.SmoothPlastic
+            v.Reflectance = 0
+        elseif v:IsA("Decal") then
+            v.Transparency = 0.5
+        elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+            v.Lifetime = NumberRange.new(0, 1)
+        end
+    end
+
+    local terrain = workspace:FindFirstChildOfClass("Terrain")
+    if terrain then
+        terrain.WaterWaveSize = 0
+        terrain.WaterReflectance = 0
+        terrain.WaterTransparency = 1
+    end
+end
+
+local function setSunsetSky()
+    Lighting.ClockTime = 18
+    Lighting.Brightness = 1.5
+    Lighting.OutdoorAmbient = Color3.fromRGB(150, 100, 80)
+    Lighting.FogColor = Color3.fromRGB(200, 120, 100)
+    Lighting.FogEnd = 500
+
+    for _, v in ipairs(Lighting:GetChildren()) do
+        if v:IsA("Sky") then
+            v:Destroy()
+        end
+    end
+
+    local sky = Instance.new("Sky")
+    sky.Name = "SunsetSky"
+    sky.SkyboxBk = "rbxassetid://131889017"
+    sky.SkyboxDn = "rbxassetid://131889017"
+    sky.SkyboxFt = "rbxassetid://131889017"
+    sky.SkyboxLf = "rbxassetid://131889017"
+    sky.SkyboxRt = "rbxassetid://131889017"
+    sky.SkyboxUp = "rbxassetid://131889017"
+    sky.SunAngularSize = 10
+    sky.MoonAngularSize = 0
+    sky.SunTextureId = "rbxassetid://644432992"
+    sky.Parent = Lighting
+end
+
+-- Применяем настройки графики сразу
+softAntiLag()
+setSunsetSky()
+
+-- Auto Tropical Shake
+task.spawn(function()
+    while true do
+        task.wait(1)
+        local backpack = LocalPlayer:WaitForChild("Backpack")
+        local shake = backpack:FindFirstChild("Protein Egg")
+        if not shake then
+            warn("✅ No Tropical Shakes left in inventory.")
+        else
+            warn("🕹 Found Tropical Shake:", shake, "- equipping...")
+            shake.Parent = LocalPlayer.Character
+            task.wait(0.1)
+
+            if shake:FindFirstChild("Activate") then
+                shake:Activate()
+                warn("🍹 Activated Tropical Shake:", shake)
+            end
+        end
+        task.wait(0.5) -- Проверяем каждые 0.5 секунд
+    end
+end)
